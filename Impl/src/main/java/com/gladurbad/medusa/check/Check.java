@@ -54,25 +54,22 @@ public abstract class Check implements MedusaCheck {
         ++vl;
 
         MedusaAlertEvent event = new MedusaAlertEvent(data.getPlayer(), this, setback);
-        Bukkit.getScheduler().runTaskAsynchronously(Medusa.getInstance(), () -> {
-            Bukkit.getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(event);
 
-            if(!event.isCancelled()) {
-                if (vl >= Config.VL_TO_ALERT) {
-                    AlertManager.verbose(data, this);
-                    if (event.isSetback()) {
-                        final Location setBackLocation = lastLegitLocation == null ? data.getLastBukkitLocation() : lastLegitLocation;
-                        setBackLocation.setYaw(data.getPlayer().getEyeLocation().getYaw());
-                        setBackLocation.setPitch(data.getPlayer().getEyeLocation().getPitch());
+        if(!event.isCancelled()) {
+            if (vl >= Config.VL_TO_ALERT) {
+                AlertManager.verbose(data, this);
+                if (event.isSetback()) {
+                    final Location setBackLocation = lastLegitLocation == null ? data.getLastBukkitLocation() : lastLegitLocation;
+                    setBackLocation.setYaw(data.getPlayer().getEyeLocation().getYaw());
+                    setBackLocation.setPitch(data.getPlayer().getEyeLocation().getPitch());
 
-                        Bukkit.getScheduler().runTask(Medusa.getInstance(), () -> data.getPlayer().teleport(setBackLocation));
-                        data.setLastSetbackTime(now());
-                    }
+                    Bukkit.getScheduler().runTask(Medusa.getInstance(), () -> data.getPlayer().teleport(setBackLocation));
+                    data.setLastSetbackTime(now());
+                    buffer = 0;
                 }
             }
-        });
-
-        resetBuffer();
+        }
     }
 
     protected double increaseBuffer() {
